@@ -40,7 +40,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
           if (buf[i] >= 0x20 && buf[i] <= 0x7f) {
             printf("%c ", buf[i]);
           } else {
-            printf("*  ");
+            printf("* ");
           }
         }
         printf("\n");
