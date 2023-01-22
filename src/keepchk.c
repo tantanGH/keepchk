@@ -46,7 +46,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     if (psp[4] == 0xff) {   // is this a KEEP process?
       //printf("found keep process.\n");
       if (memcmp(psp + 0x100, eye_catch, eye_catch_len) == 0) {
-        printf("found a KEEP process with eye catch (%s).\n", eye_catch);
+        printf("found a KEEP process with eye catch (%s) at %08X.\n", eye_catch, psp + 0x100);
         rc = 1;
         break;
       }
