@@ -3,6 +3,8 @@
 #include <string.h>
 #include <doslib.h>
 
+#define MAX_EYE_CATCH_LEN (32)
+
 int32_t main(int32_t argc, uint8_t* argv[]) {
 
   // default return code
@@ -10,11 +12,51 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
 
   // argument check
   if (argc < 2) {
-    printf("usage: keepchk <eye-catch>\n");
+    printf("usage: keepchk [-d] <eye-catch>\n");
     goto exit;
   }
-  uint8_t* eye_catch = argv[1];
+
+  uint8_t* eye_catch = NULL;
+  for (int16_t i = 0; i < argc; i++) {
+    if (argv[i][0] == '-') {
+      if (argv[i][1] == 'd') {
+        // dump mode
+        uint8_t* exec_file = argv[2];
+        FILE* fp = fopen(exec_file,"rb");
+        if (fp == NULL) {
+          printf("error: cannot open (%s).\n", exec_file);
+          goto exit;
+        }
+        static uint8_t buf[MAX_EYE_CATCH_LEN];
+        fread(buf,1,MAX_EYE_CATCH_LEN,fp);
+        fclose(fp);
+        for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
+          printf("%02X ", buf[i]);
+        }
+        for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
+          printf("'%c'", buf[i]);
+        }
+        rc = 0;
+        goto exit;
+      } else {
+        printf("error: unknown option.\n");
+        goto exit;
+      }
+    } else {
+      eye_catch = argv[i];
+    }
+  }
+
+  if (eye_catch == NULL) {
+    printf("error: no eye catch is specified.\n");
+    goto exit;
+  }
+
   int32_t eye_catch_len = strlen(eye_catch);
+  if (eye_catch_len > MAX_EYE_CATCH_LEN) {
+    printf("error: too long eye catch.\n");
+    goto exit;
+  }
 
   // supervisor mode
   SUPER(0);
