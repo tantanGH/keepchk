@@ -3,7 +3,7 @@
 #include <string.h>
 #include <doslib.h>
 
-#define MAX_EYE_CATCH_LEN (32)
+#define MAX_EYE_CATCH_LEN (24)
 
 int32_t main(int32_t argc, uint8_t* argv[]) {
 
@@ -37,7 +37,11 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         printf("\n");
         for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
           if (i > 0) printf(" ");
-          printf("%c ", buf[i]);
+          if (buf[i] >= 0x20 && buf[i] <= 0x7f) {
+            printf("%c ", buf[i]);
+          } else {
+            printf("*  ");
+          }
         }
         printf("\n");
         rc = 0;
