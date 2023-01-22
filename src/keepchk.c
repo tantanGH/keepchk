@@ -19,6 +19,8 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   static uint8_t eye_catch[ MAX_EYE_CATCH_LEN + 1];
   eye_catch[0] = '\0';
 
+  int32_t eye_catch_len = 0;
+
   for (int16_t i = 0; i < argc; i++) {
     if (argv[i][0] == '-') {
       if (argv[i][1] == 'd' && argc > (i+1)) {
@@ -73,6 +75,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
           }
           eye_catch[j] = c1 * 16 + c2;
           eye_catch[j+1] = '\0';
+          eye_catch_len = j+1;
         }
       } else {
         if (strlen(argv[i]) > MAX_EYE_CATCH_LEN) {
@@ -80,16 +83,16 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
           goto exit;
         }
         strcpy(eye_catch, argv[i]);
+        eye_catch_len = strlen(eye_catch);
       }
     }
   }
 
-  if (eye_catch[0] == '\0') {
+  if (eye_catch[0] == '\0' || eye_catch_len == 0) {
     printf("error: no eye catch is specified.\n");
     goto exit;
   }
 
-  int32_t eye_catch_len = strlen(eye_catch);
   if (eye_catch_len > MAX_EYE_CATCH_LEN) {
     printf("error: too long eye catch.\n");
     goto exit;
