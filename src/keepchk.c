@@ -3,7 +3,7 @@
 #include <string.h>
 #include <doslib.h>
 
-#define MAX_EYE_CATCH_LEN (24)
+#define MAX_EYE_CATCH_LEN (32)
 
 int32_t main(int32_t argc, uint8_t* argv[]) {
 
@@ -16,7 +16,9 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     goto exit;
   }
 
-  uint8_t* eye_catch = NULL;
+  static uint8_t eye_catch[ MAX_EYE_CATCH_LEN + 1];
+  eye_catch[0] = '\0';
+
   for (int16_t i = 0; i < argc; i++) {
     if (argv[i][0] == '-') {
       if (argv[i][1] == 'd' && argc > (i+1)) {
@@ -27,19 +29,18 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
           printf("error: cannot open (%s).\n", exec_file);
           goto exit;
         }
-        static uint8_t buf[MAX_EYE_CATCH_LEN];
         fseek(fp, 64, SEEK_CUR);
-        fread(buf, 1, MAX_EYE_CATCH_LEN, fp);
+        fread(eye_catch, 1, MAX_EYE_CATCH_LEN, fp);
         fclose(fp);
         for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
           if (i > 0) printf(" ");
-          printf("%02X", buf[i]);
+          printf("%02X", eye_catch[i]);
         }
         printf("\n");
         for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
           if (i > 0) printf(" ");
-          if (buf[i] >= 0x20 && buf[i] <= 0x7f) {
-            printf("%c ", buf[i]);
+          if (eye_catch[i] >= 0x20 && eye_catch[i] <= 0x7f) {
+            printf("%c ", eye_catch[i]);
           } else {
             printf("* ");
           }
@@ -52,11 +53,38 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         goto exit;
       }
     } else {
-      eye_catch = argv[i];
+      if (argv[i][0] == '0' && argv[i][1] == 'x') {
+        for (int16_t j = 0; j < (strlen(argv[i]) - 2)/2; j++) {
+          uint8_t c1 = argv[i][2+j*2];
+          uint8_t c2 = argv[i][2+j*2+1];
+          if (c1 >= '0' && c1 <= '9') c1 -= '0';
+          else if (c1 >= 'a' && c1 <= 'f') c1 -= 'a' - 10;
+          else if (c1 >= 'A' && c1 <= 'F') c1 -= 'A' - 10;
+          else {
+            printf("error: bad format.\n");
+            goto exit;
+          }
+          if (c2 >= '0' && c2 <= '9') c2 -= '0';
+          else if (c2 >= 'a' && c2 <= 'f') c2 -= 'a' - 10;
+          else if (c2 >= 'A' && c2 <= 'F') c2 -= 'A' - 10;
+          else {
+            printf("error: bad format.\n");
+            goto exit;
+          }
+          eye_catch[j] = c1 * 16 + c2;
+          eye_catch[j+1] = '\0';
+        }
+      } else {
+        if (strlen(argv[i]) > MAX_EYE_CATCH_LEN) {
+          printf("error: too long eye catch.\n");
+          goto exit;
+        }
+        strcpy(eye_catch, argv[i]);
+      }
     }
   }
 
-  if (eye_catch == NULL) {
+  if (eye_catch[0] == '\0') {
     printf("error: no eye catch is specified.\n");
     goto exit;
   }
@@ -97,7 +125,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     if (psp[4] == 0xff) {   // is this a KEEP process?
       //printf("found keep process.\n");
       if (memcmp(psp + 0x100, eye_catch, eye_catch_len) == 0) {
-        printf("found a KEEP process with eye catch (%s) at %08X.\n", eye_catch, psp);
+        printf("found at %08X.\n", psp + 0x10);
         rc = 1;
         break;
       }
