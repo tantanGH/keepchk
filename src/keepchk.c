@@ -19,16 +19,17 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   uint8_t* eye_catch = NULL;
   for (int16_t i = 0; i < argc; i++) {
     if (argv[i][0] == '-') {
-      if (argv[i][1] == 'd') {
+      if (argv[i][1] == 'd' && argc > (i+1)) {
         // dump mode
-        uint8_t* exec_file = argv[2];
+        uint8_t* exec_file = argv[i+1];
         FILE* fp = fopen(exec_file,"rb");
         if (fp == NULL) {
           printf("error: cannot open (%s).\n", exec_file);
           goto exit;
         }
         static uint8_t buf[MAX_EYE_CATCH_LEN];
-        fread(buf,1,MAX_EYE_CATCH_LEN,fp);
+        fseek(fp, 64, SEEK_CUR);
+        fread(buf, 1, MAX_EYE_CATCH_LEN, fp);
         fclose(fp);
         for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
           if (i > 0) printf(" ");
