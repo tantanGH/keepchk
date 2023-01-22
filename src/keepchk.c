@@ -31,11 +31,15 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         fread(buf,1,MAX_EYE_CATCH_LEN,fp);
         fclose(fp);
         for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
-          printf("%02X ", buf[i]);
+          if (i > 0) printf(" ");
+          printf("%02X", buf[i]);
         }
+        printf("\n");
         for (int16_t i = 0; i < MAX_EYE_CATCH_LEN; i++) {
-          printf("'%c'", buf[i]);
+          if (i > 0) printf(" ");
+          printf("%c ", buf[i]);
         }
+        printf("\n");
         rc = 0;
         goto exit;
       } else {
