@@ -8,7 +8,7 @@
 int32_t main(int32_t argc, uint8_t* argv[]) {
 
   // default return code
-  int rc = -1;
+  int32_t rc = -1;
 
   // argument check
   if (argc < 2) {
