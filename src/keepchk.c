@@ -82,7 +82,8 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
           printf("error: too long eye catch.\n");
           goto exit;
         }
-        strcpy(eye_catch, argv[i]);
+        strncpy(eye_catch, argv[i], MAX_EYE_CATCH_LEN);
+        eye_catch[ MAX_EYE_CATCH_LEN ] = '\0'; // hard limit
         eye_catch_len = strlen(eye_catch);
       }
     }
