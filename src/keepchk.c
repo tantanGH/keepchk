@@ -137,6 +137,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     uint32_t child = *((uint32_t*)(psp + 12));
     if (child == 0) {
       printf("not found.\n");
+      rc = 0;
       break;
     }
     psp = (uint8_t*)child;
