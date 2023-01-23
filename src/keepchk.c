@@ -16,7 +16,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     goto exit;
   }
 
-  static uint8_t eye_catch[ MAX_EYE_CATCH_LEN + 1];
+  static uint8_t eye_catch[ MAX_EYE_CATCH_LEN + 1 ];
   eye_catch[0] = '\0';
 
   int32_t eye_catch_len = 0;
